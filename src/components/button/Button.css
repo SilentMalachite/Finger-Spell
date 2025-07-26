@@ -1,0 +1,126 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  position: relative;
+  overflow: hidden;
+  gap: 0.5rem;
+}
+
+/* バリアント */
+.button--primary {
+  background-color: #2563eb;
+  color: white;
+}
+
+.button--primary:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.button--secondary {
+  background-color: #e2e8f0;
+  color: #1e293b;
+}
+
+.button--secondary:hover:not(:disabled) {
+  background-color: #cbd5e1;
+}
+
+.button--danger {
+  background-color: #dc2626;
+  color: white;
+}
+
+.button--danger:hover:not(:disabled) {
+  background-color: #b91c1c;
+}
+
+.button--success {
+  background-color: #16a34a;
+  color: white;
+}
+
+.button--success:hover:not(:disabled) {
+  background-color: #15803d;
+}
+
+/* サイズ */
+.button--small {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.button--medium {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+}
+
+.button--large {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.125rem;
+}
+
+/* 状態 */
+.button--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.button--loading {
+  color: transparent;
+  position: relative;
+  pointer-events: none;
+}
+
+.button--loading .button__text,
+.button--loading .button__icon {
+  opacity: 0;
+}
+
+.button--loading::after {
+  content: '';
+  position: absolute;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: button-loading-spinner 0.8s linear infinite;
+}
+
+@keyframes button-loading-spinner {
+  from {
+    transform: rotate(0turn);
+  }
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+/* フル幅 */
+.button--full-width {
+  width: 100%;
+}
+
+/* アイコンとテキストの間隔 */
+.button__icon + .button__text {
+  margin-left: 0.5rem;
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  .button--secondary {
+    background-color: #334155;
+    color: #f1f5f9;
+  }
+  
+  .button--secondary:hover:not(:disabled) {
+    background-color: #475569;
+  }
+}
