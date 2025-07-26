@@ -169,7 +169,7 @@ npm run build
 
 ## 📧 連絡先
 
-プロジェクトリンク: [https://github.com/yourusername/finger-spell](https://github.com/yourusername/finger-spell)
+プロジェクトリンク: [https://github.com/SilentMalachite/finger-spell](https://github.com/SilentMalachite/finger-spell)
 
 ## ライセンス
 MIT
