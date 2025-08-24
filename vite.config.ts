@@ -6,15 +6,15 @@ import { resolve } from 'path';
 import { execSync } from 'child_process';
 import { existsSync, rmSync } from 'fs';
 
-// ビルド前にdistディレクトリをクリーンアップ（存在する場合のみ）
-if (existsSync('dist')) {
-  rmSync('dist', { recursive: true, force: true });
-}
-
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => {
   // 環境変数をロード
   const env = loadEnv(mode, process.cwd(), '');
+  
+  // ビルド時のみdistディレクトリをクリーンアップ
+  if (command === 'build' && existsSync('dist')) {
+    rmSync('dist', { recursive: true, force: true });
+  }
   
   // Gitのコミットハッシュを取得
   const commitHash = (() => {
@@ -37,6 +37,24 @@ export default defineConfig(({ command, mode }) => {
       electron({
         // メインプロセスのエントリーポイント
         entry: 'electron/main.ts',
+        // preload スクリプトもビルド対象に含める
+        preload: {
+          input: 'electron/preload.ts',
+          // 出力先はメインと同じディレクトリに揃える
+          vite: {
+            build: {
+              outDir: 'dist/electron',
+              minify: mode !== 'development',
+              sourcemap: mode === 'development' ? 'inline' : false,
+              rollupOptions: {
+                external: ['electron'],
+                output: {
+                  entryFileNames: 'preload.js',
+                },
+              },
+            },
+          },
+        },
         onstart: (options) => {
           if (process.env.VSCODE_DEBUG) {
             console.log('[startup] Electron App');
@@ -105,15 +123,6 @@ export default defineConfig(({ command, mode }) => {
       watch: {
         usePolling: true,
         interval: 100,
-      },
-      // プロキシ設定（APIリクエスト用）
-      proxy: {
-        '/api': {
-          target: 'http://localhost:3000',
-          changeOrigin: true,
-          secure: false,
-          rewrite: (path) => path.replace(/^\/api/, ''),
-        },
       },
     },
     // 開発サーバー起動時にブラウザを開く

@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { recognizeHandShape } from '../handRecognition';
 
 describe('recognizeHandShape', () => {
@@ -43,9 +44,14 @@ describe('recognizeHandShape', () => {
     });
 
     it('曖昧な手形状は低い信頼度を返す', () => {
-      const landmarks = createAmbiguousHandShape();
-      const result = recognizeHandShape(landmarks);
-      expect(result.confidence).toBeLessThan(0.6);
+      const spy = jest.spyOn(Math, 'random').mockReturnValue(0.5);
+      try {
+        const landmarks = createAmbiguousHandShape();
+        const result = recognizeHandShape(landmarks);
+        expect(result.confidence).toBeLessThan(0.6);
+      } finally {
+        spy.mockRestore();
+      }
     });
   });
 });

@@ -37,18 +37,24 @@ const localStorageMock = (() => {
   };
 })();
 
-// Add localStorage mock to window object
-Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock,
-  writable: true,
-});
+// Add localStorage mock only when window is available (jsdom)
+if (typeof window !== 'undefined' && typeof (window as any).localStorage === 'undefined') {
+  Object.defineProperty(window, 'localStorage', {
+    value: localStorageMock,
+    writable: true,
+  });
+}
 
 // Mock fetch
 global.fetch = jest.fn() as unknown as typeof global.fetch;
 
 // Reset mocks before each test
 beforeEach(() => {
-  localStorage.clear();
+  try {
+    if (typeof globalThis !== 'undefined' && 'localStorage' in globalThis) {
+      (globalThis as any).localStorage.clear();
+    }
+  } catch {}
   jest.clearAllMocks();
 });
 

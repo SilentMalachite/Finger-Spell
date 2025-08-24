@@ -45,7 +45,6 @@ const config: Config = {
     '^.+\\.tsx?$': ['ts-jest', {
       tsconfig: 'tsconfig.json',
       useESM: true,
-      isolatedModules: true,
     }],
   },
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
@@ -72,11 +71,10 @@ const config: Config = {
   ],
   
   // グローバル変数
-  globals: {
-    'ts-jest': {
-      useESM: true,
-    }
-  }
+  // ts-jestの非推奨警告を避けるための設定
+  transformIgnorePatterns: [
+    'node_modules/(?!(@mediapipe)/)'
+  ],
 };
 
 export default config;
