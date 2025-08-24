@@ -4,38 +4,50 @@ Finger-spellプロジェクトへの貢献ありがとうございます！こ�
 
 ## コードの貢献
 
-### 1. 開発フロー
+### 1. セットアップ
 
-1. リポジトリをフォークします
-2. `main`ブランチから新しいブランチを作成します
-3. 変更を加え、テストを追加・更新します
-4. コードをフォーマットし、ESLintのチェックを通過します
-5. プルリクエストを送信します
+```bash
+git clone <repo>
+cd finger-spell
+npm install
 
-### 2. コミットメッセージの規約
+# 開発起動（Vite + Electron）
+npm run electron:dev
 
-- 英語で記述してください
-- 一行目は50文字以内の要約
-- 二行目は空行
-- 三行目以降で詳細な説明を記述
+# テスト
+npm test
 
-例:
-```
-Add finger recognition for 'ka' sound
+# 静的解析
+npm run lint
+npm run type-check
 
-- Implement detection algorithm for 'ka' finger spelling
-- Add test cases for various hand positions
-- Update documentation
+# フォーマット
+npm run format
 ```
 
-### 3. コーディング規約
+### 2. ブランチ戦略
+- `main`: 安定ブランチ（リリース可能）
+- featureブランチ: `feat/<short-summary>`
+- fixブランチ: `fix/<short-summary>`
+
+### 3. 開発フロー
+1. `main`からブランチ作成
+2. 変更を加え、必要なテストを追加
+3. ローカルで `npm test` / `npm run lint` を通す
+4. PRを作成（テンプレに沿って記入）
+
+### 4. コミットメッセージ（Conventional Commits推奨）
+- `feat: ...`, `fix: ...`, `docs: ...`, `chore: ...`, `refactor: ...`, `test: ...`
+- 50文字以内の要約 + 空行 + 詳細
+
+### 5. コーディング規約
 
 - TypeScriptを使用し、型を適切に定義してください
 - Reactコンポーネントは関数コンポーネントで記述してください
 - Jestを使用してテストを記述してください
 - ESLintとPrettierの設定に従ってください
 
-### 4. テスト
+### 6. テスト
 
 すべての変更には適切なテストが必要です：
 
@@ -48,7 +60,7 @@ Add finger recognition for 'ka' sound
 npm test
 ```
 
-### 5. ドキュメント
+### 7. ドキュメント
 
 コードの変更に応じて、必要に応じてドキュメントも更新してください：
 
@@ -74,5 +86,9 @@ npm test
 3. 実装方法のアイデアがあれば記述してください
 
 ## 質問
+
+## 行動規範 / セキュリティ
+- Code of Conduct: CODE_OF_CONDUCT.md
+- Security Policy: SECURITY.md
 
 プロジェクトに関する質問がある場合は、IssuesまたはDiscussionsで質問してください。

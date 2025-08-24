@@ -1,11 +1,11 @@
 # Finger-spell: Electron 指文字認識アプリ
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js](https://img.shields.io/badge/Node.js-16.x%20%7C%2018.x-blue)](https://nodejs.org/)
-[![Vite](https://img.shields.io/badge/Vite-4.x-646CFF)](https://vitejs.dev/)
-[![Electron](https://img.shields.io/badge/Electron-21.x-47848F)](https://www.electronjs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-18.x%20%7C%2020.x-blue)](https://nodejs.org/)
+[![Vite](https://img.shields.io/badge/Vite-7.x-646CFF)](https://vitejs.dev/)
+[![Electron](https://img.shields.io/badge/Electron-28.x-47848F)](https://www.electronjs.org/)
 [![React](https://img.shields.io/badge/React-18.x-61DAFB)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-4.x-3178C6)](https://www.typescriptlang.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6)](https://www.typescriptlang.org/)
 
 このプロジェクトはVite + React (TypeScript) で構築されたElectronアプリケーションで、Webカメラを通じて日本語の指文字を認識します。
 
@@ -48,6 +48,7 @@ npm run dev
 ### 4. Electronアプリケーションの起動
 
 ```bash
+# Vite起動後にElectronが自動起動します
 npm run electron:dev
 ```
 
@@ -66,7 +67,7 @@ finger-spell/
 │   └── main.tsx
 ├── electron/
 │   ├── main.ts
-│   └── preload.js
+│   └── preload.ts
 ├── __mocks__/
 ├── public/
 ├── tests/
@@ -103,8 +104,8 @@ npm run test:coverage
 ## ⚙️ 技術スタック
 
 - **フロントエンド**: React 18 + TypeScript
-- **ビルドツール**: Vite 4
-- **デスクトップアプリケーション**: Electron 21
+- **ビルドツール**: Vite 7
+- **デスクトップアプリケーション**: Electron 28
 - **手の検出**: MediaPipe Hands
 - **テスト**: Jest + React Testing Library
 - **コード品質**: ESLint + Prettier
@@ -153,6 +154,8 @@ npm run build
 
 すべてのテストがパスし、開発サーバーが正常に起動することを確認しています。
 
+注意: UIはTailwind CSSユーティリティクラスを使用しています。Tailwindのセットアップが未導入の場合、見た目はプレーンになります（機能には影響しません）。
+
 ## 🤝 貢献
 
 貢献は大歓迎です！以下の手順に従って貢献してください：
@@ -162,6 +165,10 @@ npm run build
 3. 変更をコミット (`git commit -m 'Add some AmazingFeature'`)
 4. ブランチにプッシュ (`git push origin feature/AmazingFeature`)
 5. プルリクエストを作成
+
+- 詳細は CONTRIBUTING.md を参照
+- 行動規範は CODE_OF_CONDUCT.md を参照
+- セキュリティ報告は SECURITY.md を参照
 
 ## 📄 ライセンス
 
@@ -173,32 +180,3 @@ npm run build
 
 ## ライセンス
 MIT
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
