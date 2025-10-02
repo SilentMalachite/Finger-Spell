@@ -1,13 +1,11 @@
-import { render, screen, act } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import App from '../App';
 
 describe('App', () => {
-  it('renders JSLFingerSpelling component', async () => {
-    // actでラップしてコンポーネントをレンダリング
-    await act(async () => {
-      render(<App />);
-    });
+  it('renders JSLFingerSpelling component', () => {
+    // コンポーネントをレンダリング
+    render(<App />);
 
     // モックコンポーネントがレンダリングされていることを確認
     const jslElement = screen.getByTestId('jsl-fingerspelling');

@@ -3,7 +3,7 @@ import { fingerSpellingMap } from '../fingerSpellingMap';
 describe('fingerSpellingMap', () => {
   test('should contain all hiragana characters', () => {
     expect(fingerSpellingMap).toBeDefined();
-    expect(Object.keys(fingerSpellingMap)).toHaveLength(48);
+    expect(Object.keys(fingerSpellingMap)).toHaveLength(83); // Updated to include voiced, semi-voiced, and small characters
   });
 
   test('should correctly map basic vowels', () => {
@@ -79,5 +79,57 @@ describe('fingerSpellingMap', () => {
     
     // ん
     expect(fingerSpellingMap['N']).toBe('ん');
+  });
+
+  test('should correctly map voiced characters', () => {
+    // 濁音
+    expect(fingerSpellingMap['GA']).toBe('が');
+    expect(fingerSpellingMap['GI']).toBe('ぎ');
+    expect(fingerSpellingMap['GU']).toBe('ぐ');
+    expect(fingerSpellingMap['GE']).toBe('げ');
+    expect(fingerSpellingMap['GO']).toBe('ご');
+
+    expect(fingerSpellingMap['ZA']).toBe('ざ');
+    expect(fingerSpellingMap['JI']).toBe('じ');
+    expect(fingerSpellingMap['ZU']).toBe('ず');
+    expect(fingerSpellingMap['ZE']).toBe('ぜ');
+    expect(fingerSpellingMap['ZO']).toBe('ぞ');
+
+    expect(fingerSpellingMap['DA']).toBe('だ');
+    expect(fingerSpellingMap['DI']).toBe('ぢ');
+    expect(fingerSpellingMap['DU']).toBe('づ');
+    expect(fingerSpellingMap['DE']).toBe('で');
+    expect(fingerSpellingMap['DO']).toBe('ど');
+
+    expect(fingerSpellingMap['BA']).toBe('ば');
+    expect(fingerSpellingMap['BI']).toBe('び');
+    expect(fingerSpellingMap['BU']).toBe('ぶ');
+    expect(fingerSpellingMap['BE']).toBe('べ');
+    expect(fingerSpellingMap['BO']).toBe('ぼ');
+  });
+
+  test('should correctly map semi-voiced characters', () => {
+    // 半濁音
+    expect(fingerSpellingMap['PA']).toBe('ぱ');
+    expect(fingerSpellingMap['PI']).toBe('ぴ');
+    expect(fingerSpellingMap['PU']).toBe('ぷ');
+    expect(fingerSpellingMap['PE']).toBe('ぺ');
+    expect(fingerSpellingMap['PO']).toBe('ぽ');
+  });
+
+  test('should correctly map small characters', () => {
+    // 小書き文字
+    expect(fingerSpellingMap['SMALL_A']).toBe('ぁ');
+    expect(fingerSpellingMap['SMALL_I']).toBe('ぃ');
+    expect(fingerSpellingMap['SMALL_U']).toBe('ぅ');
+    expect(fingerSpellingMap['SMALL_E']).toBe('ぇ');
+    expect(fingerSpellingMap['SMALL_O']).toBe('ぉ');
+    
+    expect(fingerSpellingMap['SMALL_YA']).toBe('ゃ');
+    expect(fingerSpellingMap['SMALL_YU']).toBe('ゅ');
+    expect(fingerSpellingMap['SMALL_YO']).toBe('ょ');
+    
+    expect(fingerSpellingMap['SMALL_TSU']).toBe('っ');
+    expect(fingerSpellingMap['SMALL_WA']).toBe('ゎ');
   });
 });

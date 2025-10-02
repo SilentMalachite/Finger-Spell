@@ -124,6 +124,10 @@ export default defineConfig(({ command, mode }) => {
         usePolling: true,
         interval: 100,
       },
+      // MediaPipeファイルを静的ファイルとして提供
+      fs: {
+        allow: ['..', 'node_modules/@mediapipe']
+      }
     },
     // 開発サーバー起動時にブラウザを開く
     preview: {

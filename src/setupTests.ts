@@ -3,6 +3,9 @@ import { jest } from '@jest/globals';
 import '@testing-library/jest-dom';
 import { TextEncoder, TextDecoder } from 'util';
 
+// Reactの開発ビルドを使用するための環境変数設定
+process.env.NODE_ENV = 'test';
+
 // Type declarations for global objects
 declare global {
   namespace NodeJS {
@@ -38,7 +41,7 @@ const localStorageMock = (() => {
 })();
 
 // Add localStorage mock only when window is available (jsdom)
-if (typeof window !== 'undefined' && typeof (window as any).localStorage === 'undefined') {
+if (typeof window !== 'undefined' && typeof (window as Window & { localStorage?: Storage }).localStorage === 'undefined') {
   Object.defineProperty(window, 'localStorage', {
     value: localStorageMock,
     writable: true,
@@ -52,7 +55,7 @@ global.fetch = jest.fn() as unknown as typeof global.fetch;
 beforeEach(() => {
   try {
     if (typeof globalThis !== 'undefined' && 'localStorage' in globalThis) {
-      (globalThis as any).localStorage.clear();
+      (globalThis as typeof globalThis & { localStorage: Storage }).localStorage.clear();
     }
   } catch {
     // Ignore localStorage access errors

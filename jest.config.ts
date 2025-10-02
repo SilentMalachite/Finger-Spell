@@ -11,6 +11,9 @@ const config: Config = {
   // テスト環境（ブラウザ環境のテスト用）
   testEnvironment: 'jsdom',
   
+  // Reactの開発ビルドを使用するための環境変数
+  setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
+  
   // テストファイルのマッチパターン
   testMatch: [
     '**/__tests__/**/*.test.[jt]s?(x)',
@@ -41,8 +44,6 @@ const config: Config = {
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'clover'],
   
-  // テスト実行前のセットアップファイル
-  setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
   
   // TypeScriptの設定
   preset: 'ts-jest',

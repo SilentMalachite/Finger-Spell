@@ -35,6 +35,8 @@ describe('canvasDrawing', () => {
         stroke: mockStroke,
         arc: mockArc,
         fill: mockFill,
+        save: jest.fn(),
+        restore: jest.fn(),
         strokeStyle: '',
         fillStyle: '',
         lineWidth: 0,
@@ -58,9 +60,9 @@ describe('canvasDrawing', () => {
       
       drawHandLandmarks(ctx, landmarks, canvas);
       
-      // 各ランドマークごとにarcとfillが呼ばれる
+      // パフォーマンス最適化後：バッチ処理で2回のfill呼び出し（指先用とその他用）
       expect(mockArc).toHaveBeenCalledTimes(21);
-      expect(mockFill).toHaveBeenCalledTimes(21);
+      expect(mockFill).toHaveBeenCalledTimes(2); // 指先用とその他用
     });
 
     it('指先は赤、その他のポイントは緑で描画する', () => {
@@ -73,7 +75,7 @@ describe('canvasDrawing', () => {
       drawHandLandmarks(ctx, landmarks, canvas);
       
       // fillStyleの設定回数を確認
-      const fillStyleCalls = (ctx as any).fillStyle;
+      const fillStyleCalls = (ctx as CanvasRenderingContext2D & { fillStyle?: string }).fillStyle;
       expect(fillStyleCalls).toBeDefined();
     });
 

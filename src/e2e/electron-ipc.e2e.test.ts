@@ -48,7 +48,7 @@ describe('electron main IPC handlers', () => {
     }));
 
     // devサーバーURLの有無で分岐するため、ここでは未設定にする
-    delete (process.env as any).VITE_DEV_SERVER_URL;
+    delete (process.env as typeof process.env & { VITE_DEV_SERVER_URL?: string }).VITE_DEV_SERVER_URL;
 
     // モジュールをインポート（副作用でwhenReady().then(createWindow)が実行される）
     await import('../../electron/main.ts');

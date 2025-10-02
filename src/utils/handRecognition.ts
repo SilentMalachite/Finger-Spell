@@ -7,7 +7,12 @@ interface Landmark {
 interface RecognitionResult {
   letter: string;
   confidence: number;
+  voicing?: 'none' | 'voiced' | 'semi-voiced';
+  isSmall?: boolean;
 }
+
+// 濁音・半濁音・小書き文字検出機能を追加
+import { detectVoicingType, detectSmallCharacter } from './voicingDetection';
 
 // MediaPipe Handsのランドマークインデックス
 const LANDMARK_INDICES = {
@@ -35,7 +40,24 @@ const LANDMARK_INDICES = {
 };
 
 export function recognizeHandShape(landmarks: Landmark[]): RecognitionResult {
-  if (!landmarks || landmarks.length !== 21) {
+  try {
+    if (!landmarks || landmarks.length !== 21) {
+      console.warn('Invalid landmarks provided:', landmarks?.length || 'null/undefined');
+      return { letter: '', confidence: 0 };
+    }
+
+    // ランドマークの妥当性をチェック
+    const invalidLandmarks = landmarks.filter(lm => 
+      lm.x < 0 || lm.x > 1 || lm.y < 0 || lm.y > 1 || 
+      isNaN(lm.x) || isNaN(lm.y) || isNaN(lm.z)
+    );
+    
+    if (invalidLandmarks.length > 0) {
+      console.warn('Invalid landmark coordinates detected:', invalidLandmarks.length);
+      return { letter: '', confidence: 0 };
+    }
+  } catch (error) {
+    console.error('Error in recognizeHandShape:', error);
     return { letter: '', confidence: 0 };
   }
 
@@ -51,7 +73,11 @@ export function recognizeHandShape(landmarks: Landmark[]): RecognitionResult {
   // 指の状態から文字を判定
   const { letter, confidence } = matchFingerPattern(fingerStates);
 
-  return { letter, confidence };
+  // 濁音・半濁音・小書き文字の検出
+  const voicing = detectVoicingType(landmarks);
+  const isSmall = detectSmallCharacter(landmarks);
+
+  return { letter, confidence, voicing, isSmall };
 }
 
 function isFingerUp(landmarks: Landmark[], finger: string): boolean {
@@ -105,6 +131,7 @@ function isFingerUp(landmarks: Landmark[], finger: string): boolean {
 
 function matchFingerPattern(fingerStates: Record<string, boolean>): RecognitionResult {
   const patterns = [
+    // あ行 - 各文字を特徴的な形に修正
     {
       letter: 'A',
       pattern: { thumb: true, index: false, middle: false, ring: false, pinky: false },
@@ -112,7 +139,7 @@ function matchFingerPattern(fingerStates: Record<string, boolean>): RecognitionR
     },
     {
       letter: 'I',
-      pattern: { thumb: false, index: true, middle: false, ring: false, pinky: true },
+      pattern: { thumb: false, index: false, middle: false, ring: false, pinky: true },
       confidence: 0.9,
     },
     {
@@ -122,37 +149,282 @@ function matchFingerPattern(fingerStates: Record<string, boolean>): RecognitionR
     },
     {
       letter: 'E',
-      pattern: { thumb: false, index: true, middle: true, ring: true, pinky: false },
+      pattern: { thumb: false, index: true, middle: true, ring: true, pinky: true },
       confidence: 0.85,
     },
     {
       letter: 'O',
+      pattern: { thumb: true, index: true, middle: true, ring: true, pinky: true },
+      confidence: 0.85,
+    },
+
+    // か行 - 重複を解消
+    {
+      letter: 'KA',
+      pattern: { thumb: false, index: true, middle: true, ring: true, pinky: true },
+      confidence: 0.8,
+    },
+    {
+      letter: 'KI',
+      pattern: { thumb: true, index: false, middle: false, ring: false, pinky: false },
+      confidence: 0.85,
+    },
+    {
+      letter: 'KU',
+      pattern: { thumb: false, index: false, middle: false, ring: true, pinky: true },
+      confidence: 0.8,
+    },
+    {
+      letter: 'KE',
+      pattern: { thumb: true, index: false, middle: false, ring: false, pinky: true },
+      confidence: 0.85,
+    },
+    {
+      letter: 'KO',
+      pattern: { thumb: false, index: true, middle: false, ring: false, pinky: false },
+      confidence: 0.8,
+    },
+
+    // さ行 - 重複を解消
+    {
+      letter: 'SA',
+      pattern: { thumb: false, index: true, middle: false, ring: false, pinky: false },
+      confidence: 0.9,
+    },
+    {
+      letter: 'SHI',
       pattern: { thumb: true, index: true, middle: false, ring: false, pinky: false },
       confidence: 0.85,
     },
+    {
+      letter: 'SU',
+      pattern: { thumb: false, index: true, middle: true, ring: true, pinky: false },
+      confidence: 0.8,
+    },
+    {
+      letter: 'SE',
+      pattern: { thumb: false, index: true, middle: true, ring: false, pinky: false },
+      confidence: 0.75,
+    },
+    {
+      letter: 'SO',
+      pattern: { thumb: true, index: false, middle: false, ring: false, pinky: false },
+      confidence: 0.75,
+    },
+
+    // た行 - 重複を解消
+    {
+      letter: 'TA',
+      pattern: { thumb: false, index: true, middle: true, ring: false, pinky: false },
+      confidence: 0.8,
+    },
+    {
+      letter: 'CHI',
+      pattern: { thumb: true, index: true, middle: false, ring: false, pinky: false },
+      confidence: 0.85,
+    },
+    {
+      letter: 'TSU',
+      pattern: { thumb: true, index: false, middle: false, ring: false, pinky: false },
+      confidence: 0.85,
+    },
+    {
+      letter: 'TE',
+      pattern: { thumb: true, index: true, middle: true, ring: true, pinky: true },
+      confidence: 0.7,
+    },
+    {
+      letter: 'TO',
+      pattern: { thumb: false, index: true, middle: true, ring: false, pinky: false },
+      confidence: 0.75,
+    },
+
+    // な行 - 重複を解消
+    {
+      letter: 'NA',
+      pattern: { thumb: true, index: true, middle: true, ring: true, pinky: false },
+      confidence: 0.7,
+    },
+    {
+      letter: 'NI',
+      pattern: { thumb: false, index: true, middle: false, ring: false, pinky: false },
+      confidence: 0.85,
+    },
+    {
+      letter: 'NU',
+      pattern: { thumb: true, index: true, middle: false, ring: false, pinky: false },
+      confidence: 0.75,
+    },
+    {
+      letter: 'NE',
+      pattern: { thumb: false, index: true, middle: true, ring: false, pinky: false },
+      confidence: 0.85,
+    },
+    {
+      letter: 'NO',
+      pattern: { thumb: true, index: true, middle: true, ring: false, pinky: true },
+      confidence: 0.7,
+    },
+
+    // は行 - 重複を解消
+    {
+      letter: 'HA',
+      pattern: { thumb: true, index: true, middle: true, ring: true, pinky: true },
+      confidence: 0.7,
+    },
+    {
+      letter: 'HI',
+      pattern: { thumb: false, index: true, middle: false, ring: false, pinky: false },
+      confidence: 0.9,
+    },
+    {
+      letter: 'FU',
+      pattern: { thumb: false, index: true, middle: true, ring: true, pinky: false },
+      confidence: 0.85,
+    },
+    {
+      letter: 'HE',
+      pattern: { thumb: true, index: true, middle: true, ring: true, pinky: false },
+      confidence: 0.7,
+    },
+    {
+      letter: 'HO',
+      pattern: { thumb: true, index: true, middle: true, ring: false, pinky: true },
+      confidence: 0.7,
+    },
+
+    // ま行 - 重複を解消
+    {
+      letter: 'MA',
+      pattern: { thumb: true, index: true, middle: true, ring: true, pinky: false },
+      confidence: 0.85,
+    },
+    {
+      letter: 'MI',
+      pattern: { thumb: true, index: false, middle: false, ring: false, pinky: false },
+      confidence: 0.9,
+    },
+    {
+      letter: 'MU',
+      pattern: { thumb: true, index: true, middle: true, ring: true, pinky: false },
+      confidence: 0.8,
+    },
+    {
+      letter: 'ME',
+      pattern: { thumb: true, index: true, middle: true, ring: true, pinky: true },
+      confidence: 0.7,
+    },
+    {
+      letter: 'MO',
+      pattern: { thumb: true, index: true, middle: true, ring: false, pinky: true },
+      confidence: 0.7,
+    },
+
+    // や行 - 重複を解消
+    {
+      letter: 'YA',
+      pattern: { thumb: false, index: false, middle: false, ring: false, pinky: true },
+      confidence: 0.85,
+    },
+    {
+      letter: 'YU',
+      pattern: { thumb: true, index: false, middle: false, ring: false, pinky: true },
+      confidence: 0.85,
+    },
+    {
+      letter: 'YO',
+      pattern: { thumb: true, index: true, middle: false, ring: false, pinky: false },
+      confidence: 0.85,
+    },
+
+    // ら行 - 重複を解消
+    {
+      letter: 'RA',
+      pattern: { thumb: false, index: false, middle: false, ring: false, pinky: true },
+      confidence: 0.8,
+    },
+    {
+      letter: 'RI',
+      pattern: { thumb: false, index: true, middle: false, ring: false, pinky: false },
+      confidence: 0.85,
+    },
+    {
+      letter: 'RU',
+      pattern: { thumb: true, index: true, middle: true, ring: true, pinky: true },
+      confidence: 0.7,
+    },
+    {
+      letter: 'RE',
+      pattern: { thumb: false, index: false, middle: false, ring: true, pinky: false },
+      confidence: 0.8,
+    },
+    {
+      letter: 'RO',
+      pattern: { thumb: true, index: true, middle: true, ring: true, pinky: false },
+      confidence: 0.7,
+    },
+
+    // わ行 - 重複を解消
+    {
+      letter: 'WA',
+      pattern: { thumb: true, index: true, middle: true, ring: true, pinky: true },
+      confidence: 0.7,
+    },
+    {
+      letter: 'WI',
+      pattern: { thumb: true, index: true, middle: true, ring: true, pinky: false },
+      confidence: 0.7,
+    },
+    {
+      letter: 'WE',
+      pattern: { thumb: true, index: true, middle: true, ring: false, pinky: true },
+      confidence: 0.7,
+    },
+    {
+      letter: 'WO',
+      pattern: { thumb: true, index: true, middle: false, ring: true, pinky: true },
+      confidence: 0.7,
+    },
+
+    // ん
+    {
+      letter: 'N',
+      pattern: { thumb: false, index: false, middle: false, ring: false, pinky: false },
+      confidence: 0.9,
+    },
   ];
 
-  // パターンマッチング
-  for (const { letter, pattern, confidence } of patterns) {
-    const matches = Object.keys(pattern).every(
-      (finger) => fingerStates[finger as keyof typeof fingerStates] === pattern[finger as keyof typeof pattern]
-    );
+  // パターンマッチングを最適化
+  // 指の状態を数値に変換してハッシュ化
+  const fingerHash = (fingerStates.thumb ? 1 : 0) << 4 |
+                    (fingerStates.index ? 1 : 0) << 3 |
+                    (fingerStates.middle ? 1 : 0) << 2 |
+                    (fingerStates.ring ? 1 : 0) << 1 |
+                    (fingerStates.pinky ? 1 : 0);
 
-    if (matches) {
-      // 完全一致の場合は高い信頼度を返す
-      return { letter, confidence };
-    }
+  // パターンハッシュマップを作成（事前計算）
+  const patternMap = new Map<number, { letter: string; confidence: number }>();
+  patterns.forEach(({ letter, pattern, confidence }) => {
+    const patternHash = (pattern.thumb ? 1 : 0) << 4 |
+                       (pattern.index ? 1 : 0) << 3 |
+                       (pattern.middle ? 1 : 0) << 2 |
+                       (pattern.ring ? 1 : 0) << 1 |
+                       (pattern.pinky ? 1 : 0);
+    patternMap.set(patternHash, { letter, confidence });
+  });
+
+  // 完全一致をチェック
+  const exactMatch = patternMap.get(fingerHash);
+  if (exactMatch) {
+    return exactMatch;
   }
 
-  // 部分一致を探す
+  // 部分一致を探す（ハミング距離ベース）
   let bestMatch = { letter: '', confidence: 0 };
-  for (const { letter, pattern, confidence } of patterns) {
-    const matchCount = Object.keys(pattern).filter(
-      (finger) => fingerStates[finger as keyof typeof fingerStates] === pattern[finger as keyof typeof pattern]
-    ).length;
-    
-    const matchRatio = matchCount / Object.keys(pattern).length;
-    const adjustedConfidence = confidence * matchRatio * 0.7; // 部分一致は信頼度を下げる
+  for (const [patternHash, { letter, confidence }] of patternMap) {
+    const hammingDistance = (fingerHash ^ patternHash).toString(2).split('1').length - 1;
+    const matchRatio = (5 - hammingDistance) / 5;
+    const adjustedConfidence = confidence * matchRatio * 0.7;
 
     if (adjustedConfidence > bestMatch.confidence) {
       bestMatch = { letter, confidence: adjustedConfidence };
