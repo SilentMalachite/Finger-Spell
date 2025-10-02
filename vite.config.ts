@@ -34,13 +34,37 @@ export default defineConfig(({ command, mode }) => {
     },
     plugins: [
       react(),
-      electron({
-        // メインプロセスのエントリーポイント
-        entry: 'electron/main.ts',
-        // preload スクリプトもビルド対象に含める
-        preload: {
-          input: 'electron/preload.ts',
-          // 出力先はメインと同じディレクトリに揃える
+      electron([
+        {
+          // メインプロセスのエントリーポイント
+          entry: 'electron/main.ts',
+          onstart: (options) => {
+            if (process.env.VSCODE_DEBUG) {
+              console.log('[startup] Electron App');
+            } else {
+              options.startup();
+            }
+          },
+          vite: {
+            build: {
+              outDir: 'dist/electron',
+              minify: mode !== 'development',
+              sourcemap: mode === 'development' ? 'inline' : false,
+              rollupOptions: {
+                external: ['electron'],
+                output: {
+                  entryFileNames: '[name].js',
+                  chunkFileNames: '[name].js',
+                  assetFileNames: '[name].[ext]',
+                },
+              },
+            },
+          },
+        },
+        {
+          // preload スクリプトもビルド対象に含める
+          entry: 'electron/preload.ts',
+          onstart: undefined,
           vite: {
             build: {
               outDir: 'dist/electron',
@@ -50,37 +74,16 @@ export default defineConfig(({ command, mode }) => {
                 external: ['electron'],
                 output: {
                   entryFileNames: 'preload.js',
+                  format: 'cjs',
                 },
               },
             },
           },
         },
-        onstart: (options) => {
-          if (process.env.VSCODE_DEBUG) {
-            console.log('[startup] Electron App');
-          } else {
-            options.startup();
-          }
-        },
-        vite: {
-          build: {
-            outDir: 'dist/electron',
-            minify: mode !== 'development',
-            sourcemap: mode === 'development' ? 'inline' : false,
-            rollupOptions: {
-              external: ['electron'],
-              output: {
-                entryFileNames: '[name].js',
-                chunkFileNames: '[name].js',
-                assetFileNames: '[name].[ext]',
-              },
-            },
-          },
-        },
-      }),
-      // レンダラープロセス用のプラグイン
+      ]),
+      // レンダラープロセス用のプラグイン（セキュリティのためnodeIntegrationをfalseに）
       renderer({
-        nodeIntegration: true,
+        nodeIntegration: false,
       }),
     ],
     base: './',

@@ -39,17 +39,23 @@ cd finger-spell
 npm install
 ```
 
-### 3. 開発サーバーの起動
+### 3. 開発モードでの起動
+
+開発サーバーとElectronアプリを同時に起動：
 
 ```bash
-npm run dev
+npm run build    # 初回のみ必要
+npm start        # ViteとElectronを同時起動
 ```
 
-### 4. Electronアプリケーションの起動
+または個別に起動：
 
 ```bash
-# Vite起動後にElectronが自動起動します
-npm run electron:dev
+# ターミナル1: Vite開発サーバー
+npm run dev
+
+# ターミナル2: Electronアプリ
+npm run electron:start
 ```
 
 ## 📁 プロジェクト構造
@@ -136,6 +142,7 @@ npm run build
 ### セキュリティ強化
 - Electronのセキュリティ設定を強化（contextIsolation, nodeIntegration）
 - Preloadスクリプトで安全なAPI公開を実装
+- レンダラープロセスのnodeIntegrationを無効化してセキュリティを向上
 
 ### 機能実装
 - 指文字認識ロジック（`recognizeHandShape`）を完全実装
@@ -144,16 +151,19 @@ npm run build
 
 ### コード品質
 - TypeScript型定義の改善（MediaPipe専用型定義ファイル作成）
+- Electron API型定義を追加
 - テストカバレッジを50%まで向上（ユーティリティ関数は77.5%）
 - ESLint/Prettier設定の最新化
 - 指文字認識パターンの重複解消
 
 ### ビルド最適化
+- Vite 7対応のPreloadスクリプトビルド設定を修正
 - 不要な依存関係を削除
 - Viteビルド設定の最適化
 - MediaPipeパッケージのローカルインストール化
+- 開発用スクリプトを改善（concurrently使用）
 
-すべてのテストがパスし、開発サーバーが正常に起動することを確認しています。
+すべてのテストがパスし、開発サーバーが正常に起動し、Electronアプリが正しくビルドされることを確認しています。
 
 注意: UIはTailwind CSSユーティリティクラスを使用しています。Tailwindのセットアップが未導入の場合、見た目はプレーンになります（機能には影響しません）。
 

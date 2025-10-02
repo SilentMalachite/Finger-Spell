@@ -16,8 +16,10 @@
     "type-check": "tsc --noEmit",
     "lint": "eslint src",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
-    "electron:dev": "vite",
-    "electron:build": "npm run build && electron-builder"
+    "electron:dev": "vite --mode development",
+    "electron:build": "npm run build && electron-builder",
+    "electron:start": "wait-on dist/electron/main.js && electron .",
+    "start": "concurrently \"npm run dev\" \"npm run electron:start\""
   },
   "dependencies": {
     "@mediapipe/camera_utils": "^0.3.1675466862",
