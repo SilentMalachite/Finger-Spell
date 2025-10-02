@@ -54,7 +54,9 @@ beforeEach(() => {
     if (typeof globalThis !== 'undefined' && 'localStorage' in globalThis) {
       (globalThis as any).localStorage.clear();
     }
-  } catch {}
+  } catch {
+    // Ignore localStorage access errors
+  }
   jest.clearAllMocks();
 });
 

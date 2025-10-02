@@ -1,6 +1,11 @@
 import type { Config } from 'jest';
 import { pathsToModuleNameMapper } from 'ts-jest';
-import { compilerOptions } from './tsconfig.test.json';
+// import { compilerOptions } from './tsconfig.test.json' with { type: 'json' };
+const compilerOptions = {
+  paths: {
+    "@/*": ["./src/*"]
+  }
+};
 
 const config: Config = {
   // テスト環境（ブラウザ環境のテスト用）

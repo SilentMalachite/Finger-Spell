@@ -3,6 +3,13 @@
  */
 import { jest } from '@jest/globals';
 
+// Define Electron type for the test environment
+interface ElectronApp {
+  getVersion(): string;
+  on: jest.Mock;
+  quit(): void;
+}
+
 describe('electron main IPC handlers', () => {
   it('registers expected IPC channels and creates BrowserWindow', async () => {
     // electron ESMモジュールを動的モック
@@ -19,17 +26,17 @@ describe('electron main IPC handlers', () => {
       on,
     }));
 
-    const whenReady = jest.fn().mockResolvedValue(undefined);
+    const whenReady = jest.fn().mockImplementation(() => Promise.resolve());
     const app = {
       whenReady,
       getVersion: jest.fn().mockReturnValue('0.0.0-test'),
       on: jest.fn(),
       quit: jest.fn(),
-    } as unknown as Electron.App;
+    } as ElectronApp;
 
     const dialog = {
-      showSaveDialog: jest.fn().mockResolvedValue({ canceled: true, filePath: undefined }),
-      showOpenDialog: jest.fn().mockResolvedValue({ canceled: true, filePaths: [] }),
+      showSaveDialog: jest.fn().mockImplementation(() => Promise.resolve({ canceled: true, filePath: undefined })),
+      showOpenDialog: jest.fn().mockImplementation(() => Promise.resolve({ canceled: true, filePaths: [] })),
     };
 
     await jest.unstable_mockModule('electron', () => ({
@@ -44,7 +51,7 @@ describe('electron main IPC handlers', () => {
     delete (process.env as any).VITE_DEV_SERVER_URL;
 
     // モジュールをインポート（副作用でwhenReady().then(createWindow)が実行される）
-    await import('~/main.ts');
+    await import('../../electron/main.ts');
 
     const electron = await import('electron');
     const { ipcMain } = electron as unknown as { ipcMain: { handle: jest.Mock } };
