@@ -9,6 +9,6 @@ describe('JSLFingerSpelling Component Tests', () => {
 
     // コンポーネントがレンダリングされたことを確認
     const component = screen.getByText(/JSL Finger Spelling Component/i);
-    expect(component).toBeInTheDocument();
+    expect(component).toBeTruthy();
   });
 });

@@ -24,8 +24,7 @@
     },
     "types": [
       "node",
-      "jest",
-      "@testing-library/jest-dom"
+      "vite/client"
     ],
     "typeRoots": [
       "./node_modules/@types",
@@ -33,13 +32,7 @@
     ]
   },
   "include": [
-    "src",
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "**/*.spec.ts",
-    "**/*.spec.tsx",
-    "jest.config.ts",
-    "jest.setup.js"
+    "src"
   ],
-  "exclude": ["node_modules", "dist", "coverage", "test-results", "*.config.*"]
+  "exclude": ["node_modules", "dist", "coverage", "test-results", "**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"]
 }

@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { Camera, Play, Pause } from 'lucide-react';
+import * as Sentry from '@sentry/browser';
 import { fingerSpellingMap } from '../fingerSpellingMap';
 import { recognizeHandShape } from '../utils/handRecognition';
 import { getCompleteCharacter } from '../utils/voicingDetection';
@@ -193,16 +194,22 @@ const JSLFingerSpelling = () => {
       setError(errorMessage);
       setIsLoading(false);
       
-      // エラーをログに記録（本番環境では外部サービスに送信）
-      if (process.env.NODE_ENV === 'production') {
-        // 本番環境でのエラーログ送信（例：Sentry、LogRocket等）
-        console.error('Production error:', {
-          error: errorDetails,
-          timestamp: new Date().toISOString(),
-          userAgent: navigator.userAgent,
-          url: window.location.href
-        });
-      }
+       // エラーをログに記録（本番環境では外部サービスに送信）
+       if (process.env.NODE_ENV === 'production') {
+         // 本番環境でのエラーログ送信（Sentryを使用）
+         Sentry.captureException(error, {
+           tags: {
+             component: 'JSLFingerSpelling',
+             errorType: 'CameraInitialization'
+           },
+           extra: {
+             errorDetails,
+             timestamp: new Date().toISOString(),
+             userAgent: navigator.userAgent,
+             url: window.location.href
+           }
+         });
+       }
     }
   }, [resolveHandsAssetBase]);
 

@@ -51,6 +51,11 @@ const config: Config = {
     '^.+\\.tsx?$': ['ts-jest', {
       tsconfig: 'tsconfig.json',
       useESM: true,
+      globals: {
+        'ts-jest': {
+          useESM: true,
+        },
+      },
     }],
   },
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
@@ -76,7 +81,6 @@ const config: Config = {
     ]
   ],
   
-  // グローバル変数
   // ts-jestの非推奨警告を避けるための設定
   transformIgnorePatterns: [
     'node_modules/(?!(@mediapipe)/)'
